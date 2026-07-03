@@ -1,0 +1,32 @@
+{
+  "name": "Журнал Искателя приключений",
+  "short_name": "Журнал",
+  "description": "Веди своих героев D&D 5e, бросай кости и записывай каждую главу похода.",
+  "lang": "ru",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E1119",
+  "theme_color": "#0E1119",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
