@@ -1,11 +1,12 @@
 // Service worker: кэширует все файлы приложения для работы офлайн.
 // При обновлении содержимого меняй CACHE (например v1 -> v2), чтобы
 // пользователи получили свежую версию.
-const CACHE = 'dnd-journal-v1';
+const CACHE = 'dnd-journal-v3';
 
 const ASSETS = [
   'index.html',
   'manifest.json',
+  'splash-flower.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',
