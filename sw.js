@@ -1,7 +1,11 @@
-// Service worker: кэширует все файлы приложения для работы офлайн.
-// При обновлении содержимого меняй CACHE (например v1 -> v2), чтобы
-// пользователи получили свежую версию.
-const CACHE = 'dnd-journal-v3';
+// Service worker: держит приложение рабочим офлайн и вовремя обновляет его.
+// Стратегия:
+//   - сама страница (навигация) -> "сначала сеть": при интернете всегда свежая
+//     версия, без интернета -> из кэша.
+//   - шрифты/иконки/картинки -> "сначала кэш" (они меняются редко).
+// При обновлении содержимого меняй номер версии (v4 -> v5), чтобы устройства
+// гарантированно перекачали файлы.
+const CACHE = 'dnd-journal-v4';
 
 const ASSETS = [
   'index.html',
@@ -47,25 +51,34 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-// Cache-first: сначала кэш, при промахе — сеть (и докладываем в кэш).
 self.addEventListener('fetch', function (event) {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-      return fetch(event.request).then(function (resp) {
-        if (resp && resp.status === 200 && resp.type === 'basic') {
-          const copy = resp.clone();
-          caches.open(CACHE).then(function (cache) {
-            cache.put(event.request, copy);
-          });
-        }
+  var req = event.request;
+  if (req.method !== 'GET') return;
+
+  // Навигация (открытие приложения) -> сначала сеть, кэш как запасной вариант.
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then(function (resp) {
+        var copy = resp.clone();
+        caches.open(CACHE).then(function (c) { c.put('index.html', copy); });
         return resp;
       }).catch(function () {
-        // офлайн и нет в кэше — для навигации отдаём главную страницу
-        if (event.request.mode === 'navigate') {
-          return caches.match('index.html');
+        return caches.match('index.html');
+      })
+    );
+    return;
+  }
+
+  // Прочие ресурсы -> сначала кэш, при промахе сеть (и докладываем в кэш).
+  event.respondWith(
+    caches.match(req).then(function (cached) {
+      if (cached) return cached;
+      return fetch(req).then(function (resp) {
+        if (resp && resp.status === 200 && resp.type === 'basic') {
+          var copy = resp.clone();
+          caches.open(CACHE).then(function (c) { c.put(req, copy); });
         }
+        return resp;
       });
     })
   );
