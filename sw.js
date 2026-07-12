@@ -3,9 +3,9 @@
 //   - сама страница (навигация) -> "сначала сеть": при интернете всегда свежая
 //     версия, без интернета -> из кэша.
 //   - шрифты/иконки/картинки -> "сначала кэш" (они меняются редко).
-// При обновлении содержимого меняй номер версии (v4 -> v5), чтобы устройства
+// При обновлении содержимого меняй номер версии (v5 -> v6), чтобы устройства
 // гарантированно перекачали файлы.
-const CACHE = 'dnd-journal-v4';
+const CACHE = 'dnd-journal-v5';
 
 const ASSETS = [
   'index.html',
@@ -55,7 +55,6 @@ self.addEventListener('fetch', function (event) {
   var req = event.request;
   if (req.method !== 'GET') return;
 
-  // Навигация (открытие приложения) -> сначала сеть, кэш как запасной вариант.
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req).then(function (resp) {
@@ -69,7 +68,6 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // Прочие ресурсы -> сначала кэш, при промахе сеть (и докладываем в кэш).
   event.respondWith(
     caches.match(req).then(function (cached) {
       if (cached) return cached;
